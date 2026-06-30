@@ -1,49 +1,719 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* ============================================================
+   Theme & Variables
+   ============================================================ */
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --border-color: #e5e7eb;
+  --accent-color: #3b82f6;
+  --table-header-bg: #f8fafc;
+  --selection-bg: #bfdbfe;
+  --column-gap: 24px;
+  --column-padding: 8px;
+  --border-radius: 8px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --notion-bg: #ffffff;
+  --notion-text: #37352f;
+  --notion-gray: #e9e9e7;
+  --notion-hover: rgba(55, 53, 47, 0.08);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --border-color: #2d2d2d;
+    --accent-color: #3b82f6;
+    --table-header-bg: #111827;
+    --selection-bg: #1e3a8a;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+    --notion-bg: #1a1a1a;
+    --notion-text: #e9e9e7;
+    --notion-gray: #2d2d2d;
+    --notion-hover: rgba(255, 255, 255, 0.08);
   }
 }
 
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border-custom: var(--border-color);
+}
+
+/* ============================================================
+   Base Styles
+   ============================================================ */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+  line-height: 1.6;
 }
 
-/* Tiptap Editor Styles */
+/* ============================================================
+   Tiptap Editor Base
+   ============================================================ */
 .tiptap {
   outline: none !important;
+  padding: 20px 40px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.tiptap p.is-editor-empty:first-child::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: #adb5bd;
-  pointer-events: none;
-  height: 0;
-}
-
+/* Placeholder logic */
+.tiptap p.is-editor-empty:first-child::before,
 .tiptap .is-empty::before {
   content: attr(data-placeholder);
   float: left;
   color: #adb5bd;
   pointer-events: none;
   height: 0;
+  font-size: 16px;
 }
+
+/* Text Selection */
+.tiptap *::selection {
+  background-color: var(--selection-bg);
+}
+
+/* ============================================================
+   Notion-style Column System
+   ============================================================ */
+
+/* Column Group Container */
+.notion-column-group,
+.column-group-container,
+div[data-type="column-group"] {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+  gap: 24px !important;
+  align-items: stretch !important;
+  position: relative !important;
+  margin: 8px 0 !important;
+  padding: 0 !important;
+  min-height: 40px !important;
+}
+
+/* Individual Column */
+.notion-column,
+.column-wrapper,
+div[data-type="column"] {
+  flex: 0 0 auto !important;
+  min-width: 10% !important;
+  max-width: 100% !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Column Content Area */
+.notion-column-content {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 4px 8px !important;
+  border-radius: 8px !important;
+  transition: background-color 0.2s ease !important;
+  min-height: 40px !important;
+  position: relative !important;
+}
+
+.notion-column-content:hover {
+  background-color: var(--notion-hover) !important;
+}
+
+.notion-column-inner,
+.column-content {
+  display: block !important;
+  height: 100% !important;
+  min-height: 40px !important;
+  padding: 4px 0 !important;
+  outline: none !important;
+  flex: 1 !important;
+}
+
+.notion-column-inner > *:first-child,
+.column-content > *:first-child {
+  margin-top: 0 !important;
+}
+
+.notion-column-inner > *:last-child,
+.column-content > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* ============================================================
+   Notion-style Resize Handles
+   ============================================================ */
+.notion-resize-handle,
+.resize-handle {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 16px !important;
+  cursor: col-resize !important;
+  z-index: 20 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: -8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.notion-resize-handle:hover .resize-grip,
+.resize-handle:hover .handle-grip {
+  opacity: 1 !important;
+}
+
+.notion-resize-handle:hover .notion-resize-line {
+  background: #d1d5db !important;
+  width: 3px !important;
+}
+
+.notion-resize-line {
+  width: 2px !important;
+  height: 100% !important;
+  background: transparent !important;
+  border-radius: 2px !important;
+  transition: all 0.2s ease !important;
+  position: relative !important;
+}
+
+.resize-grip,
+.handle-grip {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 20px !important;
+  height: 32px !important;
+  background: var(--background) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 0 !important;
+  transition: all 0.2s ease !important;
+  box-shadow: var(--shadow-sm) !important;
+  pointer-events: none !important;
+}
+
+.resize-grip svg,
+.handle-grip svg {
+  color: #9ca3af !important;
+  width: 12px !important;
+  height: 12px !important;
+}
+
+/* ============================================================
+   Notion-style Column Menu
+   ============================================================ */
+.notion-menu-trigger {
+  opacity: 0 !important;
+  transition: all 0.2s ease !important;
+  padding: 2px !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  border: none !important;
+  color: #9ca3af !important;
+  cursor: pointer !important;
+}
+
+.notion-column-group:hover .notion-menu-trigger,
+.notion-column:hover .notion-menu-trigger,
+.column-group-container:hover .menu-trigger,
+div[data-type="column"]:hover .menu-trigger {
+  opacity: 1 !important;
+}
+
+.notion-menu-trigger:hover {
+  background: var(--notion-hover) !important;
+}
+
+/* Column Menu Container */
+.notion-column-menu-container {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+}
+
+/* ============================================================
+   Notion-style Dropdown Menu
+   ============================================================ */
+.notion-dropdown-menu,
+.column-dropdown-menu {
+  position: absolute !important;
+  top: 100% !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin-top: 8px !important;
+  min-width: 220px !important;
+  background: var(--notion-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: 4px 0 !important;
+  z-index: 50 !important;
+  pointer-events: auto !important;
+  animation: slideDown 0.2s ease-out !important;
+  overflow: hidden !important;
+}
+
+.notion-dropdown-menu .menu-header,
+.column-dropdown-menu .menu-header {
+  padding: 6px 12px !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: #6b7280 !important;
+}
+
+.notion-dropdown-menu .menu-item,
+.column-dropdown-menu .menu-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease !important;
+  width: 100% !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--notion-text) !important;
+  text-align: left !important;
+}
+
+.notion-dropdown-menu .menu-item:hover,
+.column-dropdown-menu .menu-item:hover {
+  background-color: var(--notion-hover) !important;
+}
+
+.notion-dropdown-menu .menu-divider,
+.column-dropdown-menu .menu-divider {
+  height: 1px !important;
+  background: var(--border-color) !important;
+  margin: 4px 0 !important;
+}
+
+.notion-dropdown-menu .menu-item.danger,
+.column-dropdown-menu .menu-item.danger {
+  color: #ef4444 !important;
+}
+
+.notion-dropdown-menu .menu-item.danger:hover,
+.column-dropdown-menu .menu-item.danger:hover {
+  background-color: #fef2f2 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .notion-dropdown-menu .menu-item.danger:hover,
+  .column-dropdown-menu .menu-item.danger:hover {
+    background-color: rgba(239, 68, 68, 0.2) !important;
+  }
+}
+
+/* ============================================================
+   Color Grid
+   ============================================================ */
+.color-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 4px !important;
+  padding: 4px 8px !important;
+}
+
+.color-swatch {
+  width: 100% !important;
+  height: 24px !important;
+  border-radius: 4px !important;
+  border: 1px solid var(--border-color) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  position: relative !important;
+}
+
+.color-swatch:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 0 0 2px var(--accent-color) !important;
+}
+
+.color-swatch.transparent {
+  background: var(--background) !important;
+  overflow: hidden !important;
+}
+
+.color-swatch.transparent::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    #ef4444 45%,
+    #ef4444 55%,
+    transparent 55%
+  ) !important;
+}
+
+.color-swatch.white {
+  background: #ffffff !important;
+}
+.color-swatch.gray {
+  background: #f3f4f6 !important;
+}
+.color-swatch.blue {
+  background: #dbeafe !important;
+}
+.color-swatch.green {
+  background: #d1fae5 !important;
+}
+.color-swatch.yellow {
+  background: #fef3c7 !important;
+}
+.color-swatch.red {
+  background: #fee2e2 !important;
+}
+.color-swatch.purple {
+  background: #ede9fe !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .color-swatch.white {
+    background: #1f2937 !important;
+  }
+  .color-swatch.gray {
+    background: #374151 !important;
+  }
+  .color-swatch.blue {
+    background: #1e3a8a !important;
+  }
+  .color-swatch.green {
+    background: #064e3b !important;
+  }
+  .color-swatch.yellow {
+    background: #713f12 !important;
+  }
+  .color-swatch.red {
+    background: #7f1d1d !important;
+  }
+  .color-swatch.purple {
+    background: #4c1d95 !important;
+  }
+}
+
+/* ============================================================
+   Column Background Colors
+   ============================================================ */
+.notion-column-content[data-background-color="white"] {
+  background-color: #ffffff !important;
+}
+.notion-column-content[data-background-color="gray"] {
+  background-color: #f3f4f6 !important;
+}
+.notion-column-content[data-background-color="blue"] {
+  background-color: #eff6ff !important;
+}
+.notion-column-content[data-background-color="green"] {
+  background-color: #f0fdf4 !important;
+}
+.notion-column-content[data-background-color="yellow"] {
+  background-color: #fffbeb !important;
+}
+.notion-column-content[data-background-color="red"] {
+  background-color: #fef2f2 !important;
+}
+.notion-column-content[data-background-color="purple"] {
+  background-color: #faf5ff !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .notion-column-content[data-background-color="white"] {
+    background-color: #1f2937 !important;
+  }
+  .notion-column-content[data-background-color="gray"] {
+    background-color: #374151 !important;
+  }
+  .notion-column-content[data-background-color="blue"] {
+    background-color: #1e3a8a !important;
+  }
+  .notion-column-content[data-background-color="green"] {
+    background-color: #064e3b !important;
+  }
+  .notion-column-content[data-background-color="yellow"] {
+    background-color: #713f12 !important;
+  }
+  .notion-column-content[data-background-color="red"] {
+    background-color: #7f1d1d !important;
+  }
+  .notion-column-content[data-background-color="purple"] {
+    background-color: #4c1d95 !important;
+  }
+}
+
+/* ============================================================
+   Column Border Colors
+   ============================================================ */
+.notion-column-content[data-border-color="white"] {
+  border-color: #e5e7eb !important;
+}
+.notion-column-content[data-border-color="gray"] {
+  border-color: #d1d5db !important;
+}
+.notion-column-content[data-border-color="blue"] {
+  border-color: #93c5fd !important;
+}
+.notion-column-content[data-border-color="green"] {
+  border-color: #86efac !important;
+}
+.notion-column-content[data-border-color="yellow"] {
+  border-color: #fcd34d !important;
+}
+.notion-column-content[data-border-color="red"] {
+  border-color: #fca5a5 !important;
+}
+.notion-column-content[data-border-color="purple"] {
+  border-color: #d8b4fe !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .notion-column-content[data-border-color="white"] {
+    border-color: #374151 !important;
+  }
+  .notion-column-content[data-border-color="gray"] {
+    border-color: #4b5563 !important;
+  }
+  .notion-column-content[data-border-color="blue"] {
+    border-color: #1e40af !important;
+  }
+  .notion-column-content[data-border-color="green"] {
+    border-color: #065f46 !important;
+  }
+  .notion-column-content[data-border-color="yellow"] {
+    border-color: #78350f !important;
+  }
+  .notion-column-content[data-border-color="red"] {
+    border-color: #991b1b !important;
+  }
+  .notion-column-content[data-border-color="purple"] {
+    border-color: #5b21b6 !important;
+  }
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.column-enter {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* ============================================================
+   Responsive Design
+   ============================================================ */
+@media (max-width: 640px) {
+  .notion-column-group,
+  .column-group-container,
+  div[data-type="column-group"] {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .notion-column,
+  .column-wrapper,
+  div[data-type="column"] {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  .notion-resize-handle,
+  .resize-handle {
+    display: none !important;
+  }
+
+  .notion-menu-trigger {
+    opacity: 1 !important;
+  }
+
+  .notion-column-content {
+    padding: 4px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .notion-column-content {
+    padding: 2px !important;
+  }
+
+  .notion-dropdown-menu,
+  .column-dropdown-menu {
+    min-width: 180px !important;
+  }
+
+  .color-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+/* ============================================================
+   Print Styles
+   ============================================================ */
+@media print {
+  .notion-column-group,
+  .column-group-container,
+  div[data-type="column-group"] {
+    gap: 16px !important;
+    margin: 4px 0 !important;
+  }
+
+  .notion-column-content {
+    break-inside: avoid !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: none !important;
+    padding: 4px !important;
+  }
+
+  .notion-menu-trigger,
+  .notion-resize-handle,
+  .resize-handle,
+  .notion-dropdown-menu,
+  .column-dropdown-menu {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   Table System
+   ============================================================ */
+.table-wrapper {
+  position: relative;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.tiptap table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tiptap td,
+.tiptap th {
+  min-width: 50px;
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.tiptap th {
+  font-weight: 600;
+  text-align: left;
+  background-color: var(--table-header-bg);
+  color: var(--foreground);
+}
+
+/* Sticky Header */
+.tiptap table.sticky-header thead th,
+.tiptap table.sticky-header th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: var(--table-header-bg);
+}
+
+/* Sticky Column */
+.tiptap table.sticky-column td:first-child,
+.tiptap table.sticky-column th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background-color: var(--background);
+}
+
+.tiptap table.sticky-column th:first-child {
+  z-index: 30;
+}
+
+/* Selected Cell Highlight */
+.tiptap .selectedCell:after {
+  z-index: 2;
+  position: absolute;
+  content: "";
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(59, 130, 246, 0.15);
+  pointer-events: none;
+}
+
+/* Column Resize Handle */
+.tiptap .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: -2px;
+  width: 4px;
+  background-color: var(--accent-color);
+  pointer-events: none;
+}
+
+/* Row Hover effect */
+.tiptap tr:hover td {
+  background-color: var(--notion-hover);
+}
+
+/* ============================================================
+   Special Blocks
+   ============================================================ */
 
 /* Task List */
 ul[data-type="taskList"] {
@@ -54,211 +724,40 @@ ul[data-type="taskList"] {
 ul[data-type="taskList"] li {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
+  gap: 8px;
+  margin-bottom: 4px;
 }
 
 ul[data-type="taskList"] label {
   flex: 0 0 auto;
   user-select: none;
-  margin-top: 0.25rem;
+  margin-top: 2px;
 }
 
 ul[data-type="taskList"] div {
   flex: 1 1 auto;
 }
 
-/* Table */
-.table-wrapper {
-  @apply relative;
-  max-width: 100%;
-}
-
-.tiptap table {
-  border-collapse: collapse;
-  table-layout: fixed;
-  width: 100%;
-  margin: 0;
-}
-
-.tiptap td,
-.tiptap th {
-  min-width: 50px;
-  border: 1px solid #e2e8f0;
-  padding: 8px 12px;
-  vertical-align: top;
-  box-sizing: border-box;
-  position: relative;
-  transition: background-color 0.2s;
-}
-
-.tiptap th {
-  font-weight: bold;
-  text-align: left;
-  background-color: #f8fafc;
-}
-
-.dark .tiptap td,
-.dark .tiptap th {
-  border-color: #1f2937;
-}
-
-.dark .tiptap th {
-  background-color: #111827;
-}
-
-/* Sticky Header */
-.tiptap table.sticky-header thead th,
-.tiptap table.sticky-header th {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-
-/* Sticky Column */
-.tiptap table.sticky-column td:first-child,
-.tiptap table.sticky-column th:first-child {
-  position: sticky;
-  left: 0;
-  z-index: 10;
-  background-color: inherit;
-}
-
-/* Ensure background color is preserved in sticky columns */
-.tiptap table.sticky-column td:first-child {
-  background-color: #fff;
-}
-
-.dark .tiptap table.sticky-column td:first-child {
-  background-color: #0a0a0a;
-}
-
-.tiptap table.sticky-column th:first-child {
-  z-index: 30;
-}
-
-/* Selection */
-.tiptap .selectedCell:after {
-  z-index: 2;
-  position: absolute;
-  content: "";
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background: rgba(200, 200, 255, 0.4);
-  pointer-events: none;
-}
-
-/* Resizing */
-.tiptap .column-resize-handle {
-  position: absolute;
-  right: -2px;
-  top: 0;
-  bottom: -2px;
-  width: 4px;
-  background-color: #3b82f6;
-  pointer-events: none;
-}
-
-/* Table Hover Effects (Notion-like) */
-.tiptap tr:hover td {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
-.dark .tiptap tr:hover td {
-  background-color: rgba(255, 255, 255, 0.02);
-}
-
-/* No Scrollbar helper */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Code Block */
-pre {
-  background: #0d0d0d;
-  color: #fff;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-}
-
-code {
-  color: inherit;
-  padding: 0;
-  background: none;
-  font-size: 0.8rem;
-}
-
-/* ============================================================
-   Column Group & Column
-   ============================================================ */
-/* কলাম গ্রুপ যাতে সবসময় ফ্লেক্স থাকে */
-/* globals.css বা index.css ফাইলে যোগ করুন */
-.column-group {
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
-  width: 100% !important;
-  gap: 1rem !important; /* gap-4 এর সমান */
-  margin-bottom: 1rem !important;
-}
-
-.column {
-  flex-grow: 1;
-  flex-shrink: 1; /* overflow এড়াতে shrink চালু করা ভালো */
-  min-width: 0;
-  overflow: hidden;
-  word-wrap: break-word;
-  word-break: break-word;
-}
-
-@media (max-width: 640px) {
-  div[data-type="column-group"] {
-    flex-direction: column;
-    gap: 1rem;
-  }
-}
-
-/* Ensure images and tables don't break column layout */
-div[data-type="column"] img,
-div[data-type="column"] video,
-div[data-type="column"] iframe {
-  max-width: 100%;
-  height: auto;
-}
-
-div[data-type="column"] table {
-  width: 100%;
-  min-width: 0;
-}
-/* ============================================================ */
-
 /* Callout */
 div[data-type="callout"] {
   display: flex;
-  gap: 1rem;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  border: 1px solid #e2e8f0;
-  margin-bottom: 1rem;
-}
-
-.dark div[data-type="callout"] {
-  border-color: #1f2937;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 12px;
+  background-color: var(--notion-hover);
 }
 
 /* Toggle */
 details.toggle-block {
-  margin-bottom: 0.5rem;
+  margin-bottom: 8px;
 }
 
 details.toggle-block summary {
   list-style: none;
+  cursor: pointer;
+  padding: 4px 0;
 }
 
 details.toggle-block summary::-webkit-details-marker {
@@ -267,16 +766,151 @@ details.toggle-block summary::-webkit-details-marker {
 
 /* Mention */
 .mention {
-  border-radius: 0.4rem;
-  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  padding: 2px 6px;
+  background-color: var(--notion-hover);
   box-decoration-break: clone;
+  color: var(--accent-color);
+  font-weight: 500;
 }
 
-/* Selection */
-.tiptap *::selection {
-  background-color: #bfdbfe;
+/* Code Block */
+pre {
+  background: #0d0d0d;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 8px 0;
 }
 
-.dark .tiptap *::selection {
-  background-color: #1e3a8a;
+code {
+  color: inherit;
+  padding: 0;
+  background: none;
+  font-size: 0.85rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Inline Code */
+.tiptap code:not(pre code) {
+  background: var(--notion-hover);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+
+/* Hide Scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ============================================================
+   Custom Scrollbar
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* ============================================================
+   Focus States
+   ============================================================ */
+*:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Selection
+   ============================================================ */
+.notion-column-content *::selection {
+  background-color: var(--selection-bg) !important;
+}
+
+/* ============================================================
+   Prose Styling for Editor Content
+   ============================================================ */
+.tiptap p {
+  margin: 0 0 4px 0;
+}
+
+.tiptap h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 16px 0 8px 0;
+}
+
+.tiptap h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 12px 0 8px 0;
+}
+
+.tiptap h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 12px 0 8px 0;
+}
+
+.tiptap ul,
+.tiptap ol {
+  padding-left: 24px;
+  margin: 4px 0;
+}
+
+.tiptap li {
+  margin: 2px 0;
+}
+
+.tiptap blockquote {
+  border-left: 4px solid var(--border-color);
+  padding-left: 16px;
+  margin: 8px 0;
+  color: var(--foreground);
+  opacity: 0.8;
+}
+
+.tiptap hr {
+  border: none;
+  border-top: 2px solid var(--border-color);
+  margin: 16px 0;
+}
+
+.tiptap img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+/* ============================================================
+   Transitions
+   ============================================================ */
+* {
+  transition-property:
+    background-color, border-color, color, fill, stroke, opacity, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }

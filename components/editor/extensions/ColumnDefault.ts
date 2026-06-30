@@ -1,5 +1,4 @@
-import { Node, mergeAttributes } from "@tiptap/core";
-import { ReactNodeViewRenderer } from "@tiptap/react";
+import { Node, mergeAttributes, ReactNodeViewRenderer } from "@tiptap/react";
 import { ColumnView } from "@/components/editor/nodes/ColumnView";
 
 export const Column = Node.create({
@@ -11,10 +10,8 @@ export const Column = Node.create({
     return {
       width: {
         default: 50,
-        parseHTML: (element) => {
-          const width = parseFloat(element.getAttribute("data-width") || "50");
-          return isNaN(width) ? 50 : width;
-        },
+        parseHTML: (element) =>
+          parseFloat(element.getAttribute("data-width") || "50"),
         renderHTML: (attributes) => ({
           "data-width": attributes.width,
         }),
@@ -71,3 +68,43 @@ export const Column = Node.create({
 });
 
 export default Column;
+
+// import { Node, mergeAttributes } from "@tiptap/core";
+
+// export const Column = Node.create({
+//   name: "column",
+//   content: "block+",
+
+//   addAttributes() {
+//     return {
+//       width: {
+//         default: "100%",
+//         parseHTML: (element) => element.style.width,
+//         renderHTML: (attributes) => ({
+//           style: `width: ${attributes.width}`,
+//         }),
+//       },
+//     };
+//   },
+
+//   parseHTML() {
+//     return [
+//       {
+//         tag: 'div[data-type="column"]',
+//       },
+//     ];
+//   },
+
+//   renderHTML({ HTMLAttributes }) {
+//     return [
+//       "div",
+//       mergeAttributes(HTMLAttributes, {
+//         "data-type": "column",
+//         class: "flex-1 min-w-0",
+//       }),
+//       0,
+//     ];
+//   },
+// });
+
+// export default Column;

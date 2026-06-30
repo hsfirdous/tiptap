@@ -12,15 +12,18 @@ export const ColumnGroup = Node.create({
       layout: {
         default: "two-column",
         parseHTML: (element) => element.getAttribute("data-layout"),
-        renderHTML: (attributes) => ({ "data-layout": attributes.layout }),
+        renderHTML: (attributes) => ({
+          "data-layout": attributes.layout,
+        }),
       },
     };
   },
 
   parseHTML() {
     return [
-      { tag: 'div[data-type="column-group"]' },
-      { tag: "div.column-group" },
+      {
+        tag: 'div[data-type="column-group"]',
+      },
     ];
   },
 
@@ -29,7 +32,7 @@ export const ColumnGroup = Node.create({
       "div",
       mergeAttributes(HTMLAttributes, {
         "data-type": "column-group",
-        class: "column-group w-full flex flex-row flex-nowrap gap-4 mb-4",
+        class: "column-group-container",
       }),
       0,
     ];
